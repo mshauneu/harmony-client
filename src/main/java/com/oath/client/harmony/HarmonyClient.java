@@ -2,6 +2,7 @@ package com.oath.client.harmony;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -16,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CipherSuite;
+import okhttp3.ConnectionSpec;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -24,6 +27,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 
@@ -86,6 +90,29 @@ public class HarmonyClient {
 		this.userPass = builder.userPass;
 
         this.httpClient = new OkHttpClient.Builder()
+                .connectionSpecs(Arrays.asList(
+                        new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                            .tlsVersions(TlsVersion.TLS_1_2)
+                            .cipherSuites(
+                                    CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+                                    CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
+                                    CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+                                    CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
+                                    CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
+                                    CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+                                    CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,
+                                    CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+                                    CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+                                    CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+                                    CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+                                    CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
+                                    CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+                                    CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA
+                             )
+                            .build(),
+                        new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT)
+                            .build()
+                ))
                 .addInterceptor(chain -> {
                     if (chain.request().method().equals("POST")) {
                         return chain.proceed(chain.request());
