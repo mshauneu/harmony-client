@@ -74,14 +74,18 @@ harmonyClient.sendMail(aolOrgId, sendMailRequest).handle((r, e) -> {
 @Configuration
 @ConfigurationProperties(prefix="harmony")
 public class HarmonyClientConfig {
+  private String clientId;
   private String clientPassword;
+  private String userName;
   private String userPassword;
   // getter and setters here
 
   @Bean
   public harmonyClient() {
     return new HarmonyClient.Builder()
+      .withClientId(clientId)
       .withClientPass(clientPassword)
+      .withUserName(userName)
       .withUserPass(userPassword)
       .build();
   }
@@ -91,7 +95,9 @@ public class HarmonyClientConfig {
 2. Provide passwords in `application.properties`
 
 ```sh
+harmony.client-id="<client-id>"
 harmony.client-password="<client-password>"
+harmony.user-name="<user-name>"
 harmony.user-password="<user-password>"
 ```
 
